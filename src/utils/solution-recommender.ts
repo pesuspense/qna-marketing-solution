@@ -52,7 +52,7 @@ export function recommendSolution(answers: QuizAnswer[]): MarketingSolution {
   // 각 솔루션에 대한 점수 계산
   const solutionScores = marketingSolutions.map(solution => {
     let score = 0;
-    let matchedConditions: string[] = [];
+    const matchedConditions: string[] = [];
     
     // 조건과 답변을 비교하여 점수 계산
     solution.conditions.forEach(condition => {

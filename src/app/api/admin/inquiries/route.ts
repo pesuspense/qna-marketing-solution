@@ -38,7 +38,7 @@ export async function GET() {
         try {
           // 1. 직접 JSON.parse 시도
           parsedAnswers = JSON.parse(answers);
-        } catch (firstError) {
+        } catch {
           try {
             // 2. 이스케이프된 따옴표 정리 후 다시 시도
             const cleanedAnswers = answers
@@ -46,7 +46,7 @@ export async function GET() {
               .replace(/^"|"$/g, '')
               .trim();
             parsedAnswers = JSON.parse(cleanedAnswers);
-          } catch (secondError) {
+          } catch {
             try {
               // 3. 정규식으로 답변 데이터 추출
               const answerMatches = answers.match(/"questionId":\s*(\d+),\s*"answer":\s*"([^"]+)"/g);

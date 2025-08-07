@@ -34,7 +34,7 @@ export default function SolutionResult({ solution, onInquiry }: SolutionResultPr
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
+    const value = e.target.value;
     
     // 숫자만 추출
     const numbers = value.replace(/[^0-9]/g, '');

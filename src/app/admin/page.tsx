@@ -59,7 +59,7 @@ export default function AdminPage() {
   const formatAnswers = (answersStr: string) => {
     try {
       const answers = JSON.parse(answersStr);
-      return answers.map((answer: any) => {
+      return answers.map((answer: { questionId: number; answer: string }) => {
         const question = questions.find(q => q.id === answer.questionId);
         const option = question?.options.find(opt => opt.value === answer.answer);
         
@@ -92,7 +92,7 @@ export default function AdminPage() {
       try {
         const cleanStr = answersStr.trim();
         answers = JSON.parse(cleanStr);
-      } catch (parseError) {
+      } catch {
         // 2. CSV 이스케이프 문제 해결 ("" -> ")
         try {
           const cleanedStr = answersStr
@@ -100,7 +100,7 @@ export default function AdminPage() {
             .replace(/^"|"$/g, '') // 앞뒤 따옴표 제거
             .trim();
           answers = JSON.parse(cleanedStr);
-        } catch (secondError) {
+        } catch {
           // 3. 일반 이스케이프 문제 해결
           try {
             const cleanedStr = answersStr
@@ -108,9 +108,9 @@ export default function AdminPage() {
               .replace(/^"|"$/g, '') // 앞뒤 따옴표 제거
               .trim();
             answers = JSON.parse(cleanedStr);
-          } catch (thirdError) {
-            // 4. 마지막으로 문자열을 직접 파싱 시도
-            console.error('JSON 파싱 실패:', thirdError, 'Raw data:', answersStr);
+                     } catch {
+             // 4. 마지막으로 문자열을 직접 파싱 시도
+             console.error('JSON 파싱 실패:', 'Raw data:', answersStr);
             
             // CSV 이스케이프된 문자열에서 직접 답변 추출 시도
             const answerMatches = answersStr.match(/""questionId"":\s*(\d+),\s*""answer"":\s*""([^""]+)""/g);
@@ -171,9 +171,9 @@ export default function AdminPage() {
         );
       }
       
-      return (
-        <div className="space-y-2">
-          {answers.map((answer: any, index: number) => {
+             return (
+         <div className="space-y-2">
+           {answers.map((answer: { questionId: number; answer: string }, index: number) => {
             if (!answer || typeof answer !== 'object') {
               return (
                 <div key={index} className="border-l-4 border-gray-300 pl-3 py-1">
@@ -184,8 +184,8 @@ export default function AdminPage() {
               );
             }
 
-            const questionId = answer.questionId || answer.question_id;
-            const answerValue = answer.answer || answer.value;
+                         const questionId = answer.questionId;
+             const answerValue = answer.answer;
             
             if (!questionId || !answerValue) {
               return (
@@ -318,12 +318,12 @@ export default function AdminPage() {
     const sortedInquiriesForExcel = [...inquiries].sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
-    const excelData = sortedInquiriesForExcel.map((inquiry, index) => {
-      // 답변 데이터 파싱 및 포맷팅
-      let formattedAnswers = '';
-      try {
-        const answers = JSON.parse(inquiry.answers.replace(/""/g, '"'));
-        formattedAnswers = answers.map((answer: any) => {
+         const excelData = sortedInquiriesForExcel.map((inquiry, index) => {
+       // 답변 데이터 파싱 및 포맷팅
+       let formattedAnswers = '';
+       try {
+         const answers = JSON.parse(inquiry.answers.replace(/""/g, '"'));
+         formattedAnswers = answers.map((answer: { questionId: number; answer: string }) => {
           const question = questions.find(q => q.id === answer.questionId);
           const option = question?.options.find(opt => opt.value === answer.answer);
           return `질문${answer.questionId}: ${option?.text || answer.answer}`;

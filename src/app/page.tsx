@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Target, Users, TrendingUp, CheckCircle } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, Target, Users, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function HomePage() {
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());

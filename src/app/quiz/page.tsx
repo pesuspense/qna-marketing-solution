@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { questions } from '@/data/quiz-data';
 import { recommendSolution } from '@/utils/solution-recommender';
 import { QuizAnswer, MarketingSolution } from '@/types/quiz';
