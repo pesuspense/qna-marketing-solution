@@ -19,7 +19,7 @@ export async function GET() {
 
     console.log(`데이터베이스에서 ${quizResponses.length}개의 문의를 발견했습니다.`);
 
-    // 응답 형식 변환
+    // 응답 형식 변환 (answers를 문자열로 변환)
     const inquiries = quizResponses.map(response => ({
       id: response.id,
       timestamp: response.createdAt.toISOString(),
@@ -28,7 +28,7 @@ export async function GET() {
       clinicName: response.clinicName,
       email: response.email,
       recommendedSolution: response.recommendedSolution,
-      answers: response.answers
+      answers: JSON.stringify(response.answers) // JSON을 문자열로 변환
     }));
 
     console.log('관리자 문의 조회 API 완료');
