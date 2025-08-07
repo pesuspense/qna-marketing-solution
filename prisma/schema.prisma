@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model QuizResponse {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // 퀴즈 응답 데이터
+  answers   Json     // 질문별 답변을 JSON 형태로 저장
+  
+  // 개인정보
+  name      String
+  phone     String
+  
+  // 추천된 솔루션
+  recommendedSolution String
+  
+  // 상담 문의 여부
+  hasInquiry Boolean @default(false)
+  
+  @@map("quiz_responses")
+}
+
+model MarketingSolution {
+  id          String   @id @default(cuid())
+  name        String   // 솔루션 이름
+  description String   // 솔루션 설명
+  category    String   // 솔루션 카테고리
+  conditions  Json     // 이 솔루션이 추천되는 조건들
+  
+  @@map("marketing_solutions")
+}
