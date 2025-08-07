@@ -56,6 +56,7 @@ export default function AdminPage() {
     }
   };
 
+  // 답변 데이터를 포맷팅하는 함수 (사용되지 않음)
   const _formatAnswers = (answersStr: string) => {
     try {
       const answers = JSON.parse(answersStr);
