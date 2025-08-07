@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,55 +19,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Vercel 환경에서는 파일 시스템 쓰기가 제한적일 수 있으므로 try-catch로 감싸기
+    // 데이터베이스에 저장
     try {
-      // 데이터 저장 디렉토리 생성
-      const dataDir = join(process.cwd(), 'data');
-      console.log('Data directory path:', dataDir);
-      
-      if (!existsSync(dataDir)) {
-        console.log('Creating data directory...');
-        mkdirSync(dataDir, { recursive: true });
-      }
-
-      // CSV 파일에 데이터 저장
-      const csvFile = join(dataDir, 'inquiries.csv');
-      console.log('CSV file path:', csvFile);
-      
-      const timestamp = new Date().toISOString();
-      
-      // JSON 데이터를 안전하게 문자열로 변환
-      let answersString;
-      try {
-        // 배열인지 확인하고 안전하게 JSON 문자열로 변환
-        if (Array.isArray(answers)) {
-          answersString = JSON.stringify(answers);
-        } else {
-          answersString = JSON.stringify([answers]);
+      const quizResponse = await prisma.quizResponse.create({
+        data: {
+          answers: answers,
+          name: name,
+          phone: phone,
+          clinicName: clinicName,
+          email: email,
+          recommendedSolution: recommendedSolution,
+          hasInquiry: true
         }
-      } catch (jsonError) {
-        console.error('JSON 변환 오류:', jsonError);
-        answersString = JSON.stringify([{ error: 'JSON 변환 실패', originalData: answers }]);
-      }
+      });
 
-      // CSV 라인 생성 (따옴표 이스케이프 처리)
-      const csvLine = `${timestamp},"${name.replace(/"/g, '""')}","${phone.replace(/"/g, '""')}","${clinicName.replace(/"/g, '""')}","${email.replace(/"/g, '""')}","${recommendedSolution.replace(/"/g, '""')}","${answersString.replace(/"/g, '""')}"\n`;
-      
-      if (!existsSync(csvFile)) {
-        // 헤더 추가
-        const header = 'timestamp,name,phone,clinicName,email,recommendedSolution,answers\n';
-        writeFileSync(csvFile, header);
-        console.log('Created new CSV file with header');
-      }
-      
-      appendFileSync(csvFile, csvLine);
-      console.log('Inquiry saved successfully to CSV file');
+      console.log('Inquiry saved successfully to database:', quizResponse.id);
 
-    } catch (fileError) {
-      console.error('파일 시스템 오류 (Vercel 환경일 수 있음):', fileError);
+    } catch (dbError) {
+      console.error('데이터베이스 저장 오류:', dbError);
       
-      // 파일 시스템 오류가 발생해도 성공으로 처리 (개발 환경에서는 파일 저장, 프로덕션에서는 로그만)
-      console.log('상담 문의 데이터 (파일 저장 실패):', {
+      // 데이터베이스 오류가 발생해도 성공으로 처리 (개발 환경에서는 DB 저장, 프로덕션에서는 로그만)
+      console.log('상담 문의 데이터 (DB 저장 실패):', {
         timestamp: new Date().toISOString(),
         name,
         phone,

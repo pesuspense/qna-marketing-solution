@@ -24,6 +24,8 @@ model QuizResponse {
   // 개인정보
   name      String
   phone     String
+  clinicName String  // 치과명 추가
+  email     String   // 이메일 추가
   
   // 추천된 솔루션
   recommendedSolution String
