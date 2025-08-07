@@ -408,7 +408,7 @@ export default function AdminPage() {
              </Link>
              <nav className="flex flex-wrap justify-center sm:justify-end items-center space-x-4 sm:space-x-6 text-sm sm:text-base">
               <Link href="/quiz" className="text-gray-600 hover:text-gray-800 transition-colors whitespace-nowrap">
-                퀴즈 시작
+                AI 솔루션 진단
               </Link>
               <Link href="/admin" className="text-blue-600 font-medium whitespace-nowrap">
                 관리자

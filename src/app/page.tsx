@@ -42,7 +42,7 @@ export default function HomePage() {
             </Link>
             <nav className="flex flex-wrap justify-center sm:justify-end space-x-4 sm:space-x-6 text-sm sm:text-base">
               <Link href="/quiz" className="text-gray-600 hover:text-gray-800 transition-colors whitespace-nowrap">
-                퀴즈 시작
+                AI 솔루션 진단
               </Link>
               <Link href="/admin/login" className="text-gray-600 hover:text-gray-800 transition-colors whitespace-nowrap">
                 관리자
@@ -76,7 +76,7 @@ export default function HomePage() {
             href="/quiz"
             className="inline-flex items-center bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
           >
-            퀴즈 시작하기
+            AI 솔루션 진단하기
             <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
         </div>
@@ -191,7 +191,7 @@ export default function HomePage() {
             href="/quiz"
             className="inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors"
           >
-            무료 퀴즈 시작하기
+            무료 AI 솔루션 진단하기
             <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
         </div>
