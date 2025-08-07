@@ -17,8 +17,7 @@ export default function QuizQuestion({ question, onAnswer, currentAnswer }: Quiz
     setSelectedOptions([]);
   }, [question.id]);
 
-  // 현재 질문의 답변이 있는지 확인 (사용하지 않지만 타입 체크용)
-  const _hasCurrentAnswer = currentAnswer && currentAnswer !== '';
+
 
   const handleOptionSelect = (optionValue: string) => {
     if (question.allowMultiple) {

@@ -41,8 +41,6 @@ export async function POST(request: NextRequest) {
 
     let savedToDatabase = false;
     let savedToCSV = false;
-    let databaseError = null;
-    let csvError = null;
 
     // 1. 데이터베이스에 저장 시도
     try {
@@ -67,7 +65,6 @@ export async function POST(request: NextRequest) {
 
     } catch (dbError) {
       console.error('❌ 데이터베이스 저장 오류:', dbError);
-      databaseError = dbError;
     } finally {
       await prisma.$disconnect();
       console.log('🔌 데이터베이스 연결 해제');
@@ -118,7 +115,6 @@ export async function POST(request: NextRequest) {
 
       } catch (csvError) {
         console.error('❌ CSV 파일 저장 오류:', csvError);
-        csvError = csvError;
       }
     }
 

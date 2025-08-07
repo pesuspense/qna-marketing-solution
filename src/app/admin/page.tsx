@@ -56,24 +56,7 @@ export default function AdminPage() {
     }
   };
 
-  // 답변 데이터를 포맷팅하는 함수 (사용되지 않음)
-  const _formatAnswers = (answersStr: string) => {
-    try {
-      const answers = JSON.parse(answersStr);
-      return answers.map((answer: { questionId: number; answer: string }) => {
-        const question = questions.find(q => q.id === answer.questionId);
-        const option = question?.options.find(opt => opt.value === answer.answer);
-        
-        if (question && option) {
-          return `질문${question.id}: ${question.text}\n답변: ${option.text}`;
-        } else {
-          return `질문${answer.questionId}: ${answer.answer}`;
-        }
-      }).join('\n\n');
-    } catch {
-      return answersStr;
-    }
-  };
+
 
   const renderAnswers = (answersStr: string) => {
     // 빈 문자열 체크
