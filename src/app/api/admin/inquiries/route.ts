@@ -55,6 +55,9 @@ export async function GET() {
       }
     }
 
+    // 시간순으로 정렬 (최신이 먼저)
+    inquiries.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
     console.log(`성공적으로 파싱된 문의 수: ${inquiries.length}`);
     console.log('관리자 문의 조회 API 완료');
     
