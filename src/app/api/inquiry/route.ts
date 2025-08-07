@@ -9,14 +9,30 @@ const prisma = new PrismaClient({
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== 상담 문의 API 시작 ===');
+    
     const body = await request.json();
     const { answers, name, phone, clinicName, email, recommendedSolution } = body;
 
-    console.log('Received inquiry data:', { answers, name, phone, clinicName, email, recommendedSolution });
+    console.log('📝 받은 데이터:', { 
+      name, 
+      phone, 
+      clinicName, 
+      email, 
+      recommendedSolution,
+      answersCount: Array.isArray(answers) ? answers.length : 'N/A'
+    });
 
     // 데이터 유효성 검사
     if (!answers || !name || !phone || !clinicName || !email || !recommendedSolution) {
-      console.error('Missing required fields:', { answers: !!answers, name: !!name, phone: !!phone, clinicName: !!clinicName, email: !!email, recommendedSolution: !!recommendedSolution });
+      console.error('❌ 필수 필드 누락:', { 
+        answers: !!answers, 
+        name: !!name, 
+        phone: !!phone, 
+        clinicName: !!clinicName, 
+        email: !!email, 
+        recommendedSolution: !!recommendedSolution 
+      });
       return NextResponse.json(
         { error: '필수 정보가 누락되었습니다.' },
         { status: 400 }
@@ -25,11 +41,14 @@ export async function POST(request: NextRequest) {
 
     let savedToDatabase = false;
     let savedToCSV = false;
+    let databaseError = null;
+    let csvError = null;
 
     // 1. 데이터베이스에 저장 시도
     try {
-      console.log('데이터베이스에 저장 시도');
+      console.log('🗄️ 데이터베이스에 저장 시도...');
       await prisma.$connect();
+      console.log('✅ 데이터베이스 연결 성공');
       
       const quizResponse = await prisma.quizResponse.create({
         data: {
@@ -43,24 +62,27 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      console.log('Inquiry saved successfully to database:', quizResponse.id);
+      console.log('✅ 데이터베이스 저장 성공:', quizResponse.id);
       savedToDatabase = true;
 
     } catch (dbError) {
-      console.error('데이터베이스 저장 오류:', dbError);
+      console.error('❌ 데이터베이스 저장 오류:', dbError);
+      databaseError = dbError;
     } finally {
       await prisma.$disconnect();
+      console.log('🔌 데이터베이스 연결 해제');
     }
 
     // 2. 데이터베이스 저장 실패 시 CSV 파일에 저장 시도
     if (!savedToDatabase) {
       try {
-        console.log('CSV 파일에 저장 시도');
+        console.log('📄 CSV 파일에 저장 시도...');
         
         // 데이터 저장 디렉토리 생성
         const dataDir = join(process.cwd(), 'data');
         if (!existsSync(dataDir)) {
           mkdirSync(dataDir, { recursive: true });
+          console.log('📁 데이터 디렉토리 생성');
         }
 
         // CSV 파일에 데이터 저장
@@ -76,7 +98,7 @@ export async function POST(request: NextRequest) {
             answersString = JSON.stringify([answers]);
           }
         } catch (jsonError) {
-          console.error('JSON 변환 오류:', jsonError);
+          console.error('❌ JSON 변환 오류:', jsonError);
           answersString = JSON.stringify([{ error: 'JSON 변환 실패', originalData: answers }]);
         }
 
@@ -87,24 +109,31 @@ export async function POST(request: NextRequest) {
           // 헤더 추가
           const header = 'timestamp,name,phone,clinicName,email,recommendedSolution,answers\n';
           writeFileSync(csvFile, header);
+          console.log('📄 CSV 파일 헤더 생성');
         }
         
         appendFileSync(csvFile, csvLine);
-        console.log('Inquiry saved successfully to CSV file');
+        console.log('✅ CSV 파일 저장 성공');
         savedToCSV = true;
 
       } catch (csvError) {
-        console.error('CSV 파일 저장 오류:', csvError);
+        console.error('❌ CSV 파일 저장 오류:', csvError);
+        csvError = csvError;
       }
     }
 
     // 3. 저장 결과 로깅
+    console.log('📊 저장 결과 요약:');
+    console.log(`   - 데이터베이스: ${savedToDatabase ? '✅ 성공' : '❌ 실패'}`);
+    console.log(`   - CSV 파일: ${savedToCSV ? '✅ 성공' : '❌ 실패'}`);
+    
     if (savedToDatabase) {
-      console.log('상담 문의가 데이터베이스에 성공적으로 저장되었습니다.');
+      console.log('🎉 상담 문의가 데이터베이스에 성공적으로 저장되었습니다.');
     } else if (savedToCSV) {
-      console.log('상담 문의가 CSV 파일에 성공적으로 저장되었습니다.');
+      console.log('🎉 상담 문의가 CSV 파일에 성공적으로 저장되었습니다.');
     } else {
-      console.log('상담 문의 저장 실패 - 로그만 기록:', {
+      console.log('⚠️ 상담 문의 저장 실패 - 로그만 기록');
+      console.log('📝 상담 문의 데이터:', {
         timestamp: new Date().toISOString(),
         name,
         phone,
@@ -114,6 +143,8 @@ export async function POST(request: NextRequest) {
         answers
       });
     }
+
+    console.log('=== 상담 문의 API 완료 ===\n');
 
     return NextResponse.json(
       { 
@@ -125,7 +156,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('상담 문의 처리 중 오류:', error);
+    console.error('❌ 상담 문의 처리 중 오류:', error);
     
     let errorMessage = '서버 오류가 발생했습니다. 다시 시도해주세요.';
     
