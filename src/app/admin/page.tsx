@@ -56,7 +56,7 @@ export default function AdminPage() {
     }
   };
 
-  const formatAnswers = (answersStr: string) => {
+  const _formatAnswers = (answersStr: string) => {
     try {
       const answers = JSON.parse(answersStr);
       return answers.map((answer: { questionId: number; answer: string }) => {
@@ -108,7 +108,7 @@ export default function AdminPage() {
               .replace(/^"|"$/g, '') // 앞뒤 따옴표 제거
               .trim();
             answers = JSON.parse(cleanedStr);
-                     } catch {
+          } catch {
              // 4. 마지막으로 문자열을 직접 파싱 시도
              console.error('JSON 파싱 실패:', 'Raw data:', answersStr);
             
@@ -209,7 +209,7 @@ export default function AdminPage() {
               
               return (
                 <div key={index} className="border-l-4 border-blue-500 pl-3 py-1">
-                  {selectedOptions.map((option: any, optIndex: number) => (
+                  {selectedOptions.map((option, optIndex: number) => (
                     <div key={optIndex} className="text-xs font-medium text-blue-600">
                       ✓ {option?.text}
                     </div>

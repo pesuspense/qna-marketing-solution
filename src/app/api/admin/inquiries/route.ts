@@ -66,8 +66,8 @@ export async function GET() {
                 // 4. 마지막 수단으로 원본 문자열 반환
                 parsedAnswers = answers;
               }
-            } catch (thirdError) {
-              console.error('JSON 파싱 실패:', thirdError, 'Raw answers:', answers);
+            } catch {
+              console.error('JSON 파싱 실패:', 'Raw answers:', answers);
               parsedAnswers = answers;
             }
           }
